@@ -10,6 +10,7 @@ public class BufferedInputStream extends FilterInputStream {
     private byte[] buf;
     private int count;
     private int pos;
+    private boolean isClosed;
     private static final int DEFAULT_SIZE = 8 * 1024;
 
     /**
@@ -35,6 +36,7 @@ public class BufferedInputStream extends FilterInputStream {
         buf = new byte[size];
         pos = 0;
         count = 0;
+        isClosed = false;
     }
 
     /**
@@ -45,7 +47,7 @@ public class BufferedInputStream extends FilterInputStream {
      */
     @Override
     public int read() throws IOException {
-
+        checkIfClosed();
         if (pos >= count) {
             refillBuffer();
         }
@@ -68,6 +70,7 @@ public class BufferedInputStream extends FilterInputStream {
     public int read(byte[] b, int off, int len) throws IOException {
         int count = 0;
 
+        checkIfClosed();
         if (b == null)
             throw new NullPointerException(); //exception if array is null
         if (off < 0 || len < 0 || off > b.length - len)
@@ -93,6 +96,7 @@ public class BufferedInputStream extends FilterInputStream {
      */
     @Override
     public void close() throws IOException {
+        isClosed = true;
         if (in != null)
             in.close();
     }
@@ -110,5 +114,12 @@ public class BufferedInputStream extends FilterInputStream {
         pos = 0;
     }
 
+    /**
+     * Checks stream is it's closed
+     * @throws IOException
+     */
+    private void checkIfClosed() throws IOException {
+        if(isClosed) throw new IOException("Stream is closed");
+    }
 
 }

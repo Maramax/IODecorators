@@ -9,22 +9,35 @@ import static org.junit.jupiter.api.Assertions.*;
 
 class ByteArrayInputStreamTest {
 
+    final byte[] initArr = {1, 2, 3};
+
+
+    ByteArrayInputStream testedStream;
+    java.io.ByteArrayInputStream nativeStream;
+
     @Nested
-    class SimpleReadTest {
+    class SimpleReadingTest {
 
-
-        final byte[] initArr = {1, 2, 3};
-
-
-        ByteArrayInputStream testedStream;
-        java.io.ByteArrayInputStream nativeStream;
 
         int testedValue;
         int nativeValue;
 
         @Test
-        @DisplayName("Read ()")
+        @DisplayName("Read nothing")
         void read1() throws Exception {
+
+            testedStream = new ByteArrayInputStream(new byte[0]);
+            nativeStream = new java.io.ByteArrayInputStream(new byte[0]);
+
+            testedValue = testedStream.read();
+            nativeValue = nativeStream.read();
+            assertEquals(nativeValue, testedValue);
+
+        }
+
+        @Test
+        @DisplayName("Read bytes")
+        void read2() throws Exception {
 
             testedStream = new ByteArrayInputStream(initArr);
             nativeStream = new java.io.ByteArrayInputStream(initArr);
@@ -32,24 +45,28 @@ class ByteArrayInputStreamTest {
             testedValue = testedStream.read();
             nativeValue = nativeStream.read();
             assertEquals(nativeValue, testedValue);
+            assertEquals(1, testedValue);
 
             testedValue = testedStream.read();
             nativeValue = nativeStream.read();
             assertEquals(nativeValue, testedValue);
+            assertEquals(2, testedValue);
 
             testedValue = testedStream.read();
             nativeValue = nativeStream.read();
             assertEquals(nativeValue, testedValue);
+            assertEquals(3, testedValue);
 
             testedValue = testedStream.read();
             nativeValue = nativeStream.read();
             assertEquals(nativeValue, testedValue);
+            assertEquals(-1, testedValue);
         }
     }
 
 
     @Nested
-    class ReadIntoByteArrayWithOffsetTest {
+    class ReadingIntoArrayTest {
 
         final byte[] initArr = {1, 2, 3, 4, 5, 6, 7, 8, 9, 10};
 
@@ -165,5 +182,60 @@ class ByteArrayInputStreamTest {
             );
         }
 
+    }
+
+    @Nested
+    class CreatingTest {
+        @Test
+        @DisplayName("Try to create with wrong offset")
+        void create1() throws Exception {
+            assertAll( //
+                    () -> assertDoesNotThrow(() -> {
+                        testedStream = new ByteArrayInputStream(initArr,-2, 3);
+                    }),
+                    () -> assertDoesNotThrow(() -> {
+                        nativeStream = new java.io.ByteArrayInputStream(initArr,-2, 3);
+                    })
+            );
+        }
+
+        @Test
+        @DisplayName("Try to create with wrong length")
+        void create2() throws Exception {
+            assertAll( //
+                    () -> assertDoesNotThrow(() -> {
+                        testedStream = new ByteArrayInputStream(initArr,1, -3);
+                    }),
+                    () -> assertDoesNotThrow(() -> {
+                        nativeStream = new java.io.ByteArrayInputStream(initArr,1, -3);
+                    })
+            );
+        }
+
+        @Test
+        @DisplayName("Try to create with too long length")
+        void create3() throws Exception {
+            assertAll( //
+                    () -> assertDoesNotThrow(() -> {
+                        testedStream = new ByteArrayInputStream(initArr,1, 321);
+                    }),
+                    () -> assertDoesNotThrow(() -> {
+                        nativeStream = new java.io.ByteArrayInputStream(initArr,1, 321);
+                    })
+            );
+        }
+
+        @Test
+        @DisplayName("Try to create with null")
+        void create4() throws Exception {
+            assertAll( //
+                    () -> assertThrows(NullPointerException.class, () -> {
+                        testedStream = new ByteArrayInputStream(null);
+                    }),
+                    () -> assertThrows(NullPointerException.class, () -> {
+                        nativeStream = new java.io.ByteArrayInputStream(null);
+                    })
+            );
+        }
     }
 }

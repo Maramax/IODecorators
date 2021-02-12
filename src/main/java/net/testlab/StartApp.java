@@ -10,39 +10,38 @@ import java.io.IOException;
 
 public class StartApp {
 
-    public static void main(String[] args) throws IOException {
+    public static void main(String[] args) {
 
+        // initial array
+        byte[] arr = {1, 2, 3, 4, 5, 6, 7, 8};
 
+        // write data to byteOS through bufferOS
+        ByteArrayOutputStream byteOS = new ByteArrayOutputStream();
+        try (BufferedOuputStream bufferOS = new BufferedOuputStream(byteOS)) {
+            for (byte b : arr) {
+                bufferOS.write(b);
+            }
+            bufferOS.flush(); // ensure flushing data to byteOS
 
-
-        byte[] arr = {1,2,3,4,5,6,7,8};
-
-        java.io.ByteArrayOutputStream testedByteStream = new java.io.ByteArrayOutputStream();
-        BufferedOuputStream testedStream = new BufferedOuputStream(testedByteStream);
-        for (byte b : arr) {
-            testedStream.write(b);
+        } catch (IOException e) {
+            e.printStackTrace();
         }
-        java.io.ByteArrayOutputStream nativeByteStream = new java.io.ByteArrayOutputStream();
-        java.io.BufferedOutputStream nativeStream = new java.io.BufferedOutputStream(nativeByteStream);
-        for (byte b : arr) {
-            nativeStream.write(b);
+
+        // get bytes from byteOS
+        byte[] bytesToRead = byteOS.toByteArray();
+
+        // pass data into byteIS to read through bufferIS
+        ByteArrayInputStream byteIS = new ByteArrayInputStream(bytesToRead);
+        try (BufferedInputStream bufferIS = new BufferedInputStream(byteIS)) {
+            int c;
+            while ((c = bufferIS.read()) != -1) {
+                System.out.print(c);
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
         }
-        System.out.println(nativeByteStream.toByteArray().length);
-        for(byte b: nativeByteStream.toByteArray())
-        System.out.print(b);
-
-
-
-        System.out.println("===========");
-        System.out.println(testedByteStream.toByteArray().length);
-        for(byte b: testedByteStream.toByteArray())
-            System.out.print(b);
-
-
 
     }
-
-
 }
 
 
