@@ -15,12 +15,11 @@ class ByteArrayInputStreamTest {
     ByteArrayInputStream testedStream;
     java.io.ByteArrayInputStream nativeStream;
 
+    int testedValue;
+    int nativeValue;
+
     @Nested
     class SimpleReadingTest {
-
-
-        int testedValue;
-        int nativeValue;
 
         @Test
         @DisplayName("Read nothing")
