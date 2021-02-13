@@ -27,13 +27,13 @@ class ByteArrayOutputStreamTest {
 
         @Test
         @DisplayName("Write nothing")
-        void write1() throws Exception {
+        void writeNothing() throws Exception {
             assertArrayEquals(testedStream.toByteArray(), nativeStream.toByteArray());
         }
 
         @Test
         @DisplayName("Write a byte")
-        void write2() throws Exception {
+        void writeOneByte() throws Exception {
             testedStream.write(46);
             nativeStream.write(46);
             assertArrayEquals(testedStream.toByteArray(), nativeStream.toByteArray());
@@ -41,7 +41,7 @@ class ByteArrayOutputStreamTest {
 
         @Test
         @DisplayName("Write many bytes")
-        void write3() throws Exception {
+        void writeManyBytes() throws Exception {
             for (byte b : initArr) {
                 testedStream.write(b);
             }
@@ -54,7 +54,7 @@ class ByteArrayOutputStreamTest {
 
         @Test
         @DisplayName("Write with predefined buf size")
-        void write4() throws Exception {
+        void writeWithPredefinedCapacity() throws Exception {
             testedStream = new ByteArrayOutputStream(3);
             for (byte b : initArr) {
                 testedStream.write(b);
@@ -71,7 +71,7 @@ class ByteArrayOutputStreamTest {
     class CreatingTest {
         @Test
         @DisplayName("Try to create with wrong size")
-        void create1() throws Exception {
+        void createWithWrongCapacity() throws Exception {
 
             assertAll( //
                     () -> assertThrows(IllegalArgumentException.class, () -> {

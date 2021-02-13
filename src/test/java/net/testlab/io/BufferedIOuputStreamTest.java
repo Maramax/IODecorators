@@ -33,7 +33,7 @@ class BufferedIOuputStreamTest {
 
         @Test
         @DisplayName("Write nothing")
-        void write1() throws Exception {
+        void writeNothing() throws Exception {
             assertArrayEquals(nativeByteStream.toByteArray(), testedByteStream.toByteArray());
             testedStream.flush();
             nativeStream.flush();
@@ -42,7 +42,7 @@ class BufferedIOuputStreamTest {
 
         @Test
         @DisplayName("Write a byte")
-        void write2() throws Exception {
+        void writeOneByte() throws Exception {
 
             testedStream.write(46);
             nativeStream.write(46);
@@ -55,7 +55,7 @@ class BufferedIOuputStreamTest {
 
         @Test
         @DisplayName("Write many bytes")
-        void write3() throws Exception {
+        void writeBytes() throws Exception {
             for (byte b : initArr) {
                 testedStream.write(b);
             }
@@ -73,7 +73,7 @@ class BufferedIOuputStreamTest {
 
         @Test
         @DisplayName("Write over buffer size")
-        void write4() throws Exception {
+        void writeBytesOverBufferSize() throws Exception {
             testedStream = new BufferedOuputStream(testedByteStream, 3);
             for (byte b : initArr) {
                 testedStream.write(b);
@@ -95,7 +95,7 @@ class BufferedIOuputStreamTest {
     class CreatingTest {
         @Test
         @DisplayName("Try to create with wrong size")
-        void create1() throws Exception {
+        void createWithWrongCapacity() throws Exception {
             testedByteStream = new java.io.ByteArrayOutputStream();
             nativeByteStream = new java.io.ByteArrayOutputStream();
 

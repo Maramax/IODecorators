@@ -23,7 +23,7 @@ class ByteArrayInputStreamTest {
 
         @Test
         @DisplayName("Read nothing")
-        void read1() throws Exception {
+        void readNothing() throws Exception {
 
             testedStream = new ByteArrayInputStream(new byte[0]);
             nativeStream = new java.io.ByteArrayInputStream(new byte[0]);
@@ -36,7 +36,7 @@ class ByteArrayInputStreamTest {
 
         @Test
         @DisplayName("Read bytes")
-        void read2() throws Exception {
+        void readBytes() throws Exception {
 
             testedStream = new ByteArrayInputStream(initArr);
             nativeStream = new java.io.ByteArrayInputStream(initArr);
@@ -85,7 +85,7 @@ class ByteArrayInputStreamTest {
 
         @Test
         @DisplayName("Read (byte[6],0,4)")
-        void read1() throws Exception {
+        void readBytesIntoArray() throws Exception {
             testedArr = new byte[6];
             testedCount = testedStream.read(testedArr, 0, 4);
             nativeArr = new byte[6];
@@ -98,7 +98,7 @@ class ByteArrayInputStreamTest {
 
         @Test
         @DisplayName("Read (byte[6],2,3)")
-        void read2() throws Exception {
+        void readBytesIntoArrayWithOffset() throws Exception {
             testedArr = new byte[6];
             testedCount = testedStream.read(testedArr, 2, 3);
             nativeArr = new byte[6];
@@ -111,7 +111,7 @@ class ByteArrayInputStreamTest {
 
         @Test
         @DisplayName("Read (byte[16],10,4)")
-        void read3() throws Exception {
+        void readBytesIntoArrayWithBiggerOffset() throws Exception {
             testedArr = new byte[16];
             testedCount = testedStream.read(testedArr, 10, 4);
             nativeArr = new byte[16];
@@ -124,7 +124,7 @@ class ByteArrayInputStreamTest {
 
         @Test
         @DisplayName("Read (byte[0],0,0)")
-        void read() throws Exception {
+        void readBytesIntoEmptyArray() throws Exception {
             testedArr = new byte[0];
             testedCount = testedStream.read(testedArr, 0, 0);
             nativeArr = new byte[0];
@@ -138,7 +138,7 @@ class ByteArrayInputStreamTest {
 
         @Test
         @DisplayName("Read with exception (byte[6],10,4) ")
-        void readWithError1() throws Exception {
+        void readBytesIntoArrayWithWrongOffset() throws Exception {
             testedArr = new byte[6];
             nativeArr = new byte[6];
             assertAll( //
@@ -153,7 +153,7 @@ class ByteArrayInputStreamTest {
 
         @Test
         @DisplayName("Read with exception (byte[6],0,15) ")
-        void readWithError2() throws Exception {
+        void readBytesIntoArrayWithWrongLength() throws Exception {
             testedArr = new byte[6];
             nativeArr = new byte[6];
             assertAll( //
@@ -168,7 +168,7 @@ class ByteArrayInputStreamTest {
 
         @Test
         @DisplayName("Read with exception (byte[6],3,3) ")
-        void readWithError3() throws Exception {
+        void readBytesIntoArrayWithWrongSumOffsetAndLength() throws Exception {
             testedArr = new byte[6];
             nativeArr = new byte[6];
             assertAll( //
@@ -187,7 +187,7 @@ class ByteArrayInputStreamTest {
     class CreatingTest {
         @Test
         @DisplayName("Try to create with wrong offset")
-        void create1() throws Exception {
+        void createWithWrongOffset() throws Exception {
             assertAll( //
                     () -> assertDoesNotThrow(() -> {
                         testedStream = new ByteArrayInputStream(initArr,-2, 3);
@@ -200,7 +200,7 @@ class ByteArrayInputStreamTest {
 
         @Test
         @DisplayName("Try to create with wrong length")
-        void create2() throws Exception {
+        void createWithWrongLength() throws Exception {
             assertAll( //
                     () -> assertDoesNotThrow(() -> {
                         testedStream = new ByteArrayInputStream(initArr,1, -3);
@@ -213,7 +213,7 @@ class ByteArrayInputStreamTest {
 
         @Test
         @DisplayName("Try to create with too long length")
-        void create3() throws Exception {
+        void createWithTooLongLenth() throws Exception {
             assertAll( //
                     () -> assertDoesNotThrow(() -> {
                         testedStream = new ByteArrayInputStream(initArr,1, 321);
@@ -226,7 +226,7 @@ class ByteArrayInputStreamTest {
 
         @Test
         @DisplayName("Try to create with null")
-        void create4() throws Exception {
+        void createWithNullArray() throws Exception {
             assertAll( //
                     () -> assertThrows(NullPointerException.class, () -> {
                         testedStream = new ByteArrayInputStream(null);

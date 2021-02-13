@@ -35,7 +35,7 @@ class BufferedInputStreamTest {
 
         @Test
         @DisplayName("Read nothing")
-        void read1() throws Exception {
+        void readNothing() throws Exception {
             testedByteStream = new java.io.ByteArrayInputStream(new byte[0]);
             testedStream = new BufferedInputStream(testedByteStream);
 
@@ -50,7 +50,7 @@ class BufferedInputStreamTest {
 
         @Test
         @DisplayName("Read bytes")
-        void read2() throws Exception {
+        void readBytes() throws Exception {
             testedValue = testedStream.read();
             nativeValue = nativeStream.read();
             assertEquals(nativeValue, testedValue);
@@ -74,7 +74,7 @@ class BufferedInputStreamTest {
 
         @Test
         @DisplayName("Read after close")
-        void readError1() throws Exception {
+        void readWithError() throws Exception {
             testedStream.close();
             nativeStream.close();
             assertAll( //
@@ -92,7 +92,7 @@ class BufferedInputStreamTest {
     class CreatingTest {
         @Test
         @DisplayName("Try to create with wrong size")
-        void create1() throws Exception {
+        void createWithWrongCapacity() throws Exception {
             testedByteStream = new java.io.ByteArrayInputStream(initArr);
             nativeByteStream = new java.io.ByteArrayInputStream(initArr);
 
