@@ -1,9 +1,8 @@
 package net.testlab.io;
 
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.DisplayName;
-import org.junit.jupiter.api.Nested;
-import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.*;
+
+import java.io.IOException;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -65,22 +64,26 @@ class ByteArrayOutputStreamTest {
             }
             assertArrayEquals(testedStream.toByteArray(), nativeStream.toByteArray());
         }
+
+        @AfterEach
+        void cleanUp() throws IOException {
+            testedStream.close();
+            nativeStream.close();
+        }
     }
 
-    @Nested
-    class CreatingTest {
-        @Test
-        @DisplayName("Try to create with wrong size")
-        void createWithWrongCapacity() throws Exception {
 
-            assertAll( //
-                    () -> assertThrows(IllegalArgumentException.class, () -> {
-                        testedStream = new ByteArrayOutputStream(-3);
-                    }),
-                    () -> assertThrows(IllegalArgumentException.class, () -> {
-                        nativeStream = new java.io.ByteArrayOutputStream(-3);
-                    })
-            );
-        }
+    @Test
+    @DisplayName("Try to create with wrong size")
+    void createWithWrongCapacity() throws Exception {
+
+        assertAll( //
+                () -> assertThrows(IllegalArgumentException.class, () -> {
+                    testedStream = new ByteArrayOutputStream(-3);
+                }),
+                () -> assertThrows(IllegalArgumentException.class, () -> {
+                    nativeStream = new java.io.ByteArrayOutputStream(-3);
+                })
+        );
     }
 }

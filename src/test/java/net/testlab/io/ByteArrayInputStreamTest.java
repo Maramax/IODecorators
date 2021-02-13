@@ -1,9 +1,8 @@
 package net.testlab.io;
 
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.DisplayName;
-import org.junit.jupiter.api.Nested;
-import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.*;
+
+import java.io.IOException;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -112,10 +111,10 @@ class ByteArrayInputStreamTest {
         @Test
         @DisplayName("Read (byte[16],10,4)")
         void readBytesIntoArrayWithBiggerOffset() throws Exception {
-            testedArr = new byte[16];
-            testedCount = testedStream.read(testedArr, 10, 4);
-            nativeArr = new byte[16];
-            nativeCount = nativeStream.read(nativeArr, 10, 4);
+            testedArr = new byte[1024];
+            testedCount = testedStream.read(testedArr, 1002, 4);
+            nativeArr = new byte[1024];
+            nativeCount = nativeStream.read(nativeArr, 1002, 4);
             assertAll( //
                     () -> assertArrayEquals(nativeArr, testedArr),
                     () -> assertEquals(nativeCount, testedCount)
@@ -131,7 +130,40 @@ class ByteArrayInputStreamTest {
             nativeCount = nativeStream.read(nativeArr, 0, 0);
             assertAll( //
                     () -> assertArrayEquals(nativeArr, testedArr),
-                    () -> assertEquals(nativeCount, testedCount)
+                    () -> assertEquals(nativeCount, testedCount),
+                    () -> assertEquals(0, testedCount)
+            );
+        }
+
+        @Test
+        @DisplayName("Read (byte[6],0,0)")
+        void readBytesWithZeroLenght() throws Exception {
+            testedArr = new byte[6];
+            testedCount = testedStream.read(testedArr, 2, 0);
+            nativeArr = new byte[6];
+            nativeCount = nativeStream.read(nativeArr, 2, 0);
+            assertAll( //
+                    () -> assertArrayEquals(nativeArr, testedArr),
+                    () -> assertEquals(nativeCount, testedCount),
+                    () -> assertEquals(0, testedCount)
+            );
+        }
+
+        @Test
+        @DisplayName("Read from empty arr")
+        void readBytesFromEmptyArray() throws Exception {
+
+            testedStream = new ByteArrayInputStream(new byte[0]);
+            testedArr = new byte[6];
+            testedCount = testedStream.read(testedArr, 0, 4);
+
+            nativeStream = new java.io.ByteArrayInputStream(new byte[0]);
+            nativeArr = new byte[6];
+            nativeCount = nativeStream.read(nativeArr, 0, 4);
+            assertAll( //
+                    () -> assertArrayEquals(nativeArr, testedArr),
+                    () -> assertEquals(nativeCount, testedCount),
+                    () -> assertEquals(-1, testedCount)
             );
         }
 
@@ -181,6 +213,12 @@ class ByteArrayInputStreamTest {
             );
         }
 
+        @AfterEach
+        void cleanUp() throws IOException {
+            testedStream.close();
+            nativeStream.close();
+        }
+
     }
 
     @Nested
@@ -190,10 +228,10 @@ class ByteArrayInputStreamTest {
         void createWithWrongOffset() throws Exception {
             assertAll( //
                     () -> assertDoesNotThrow(() -> {
-                        testedStream = new ByteArrayInputStream(initArr,-2, 3);
+                        testedStream = new ByteArrayInputStream(initArr, -2, 3);
                     }),
                     () -> assertDoesNotThrow(() -> {
-                        nativeStream = new java.io.ByteArrayInputStream(initArr,-2, 3);
+                        nativeStream = new java.io.ByteArrayInputStream(initArr, -2, 3);
                     })
             );
         }
@@ -203,10 +241,10 @@ class ByteArrayInputStreamTest {
         void createWithWrongLength() throws Exception {
             assertAll( //
                     () -> assertDoesNotThrow(() -> {
-                        testedStream = new ByteArrayInputStream(initArr,1, -3);
+                        testedStream = new ByteArrayInputStream(initArr, 1, -3);
                     }),
                     () -> assertDoesNotThrow(() -> {
-                        nativeStream = new java.io.ByteArrayInputStream(initArr,1, -3);
+                        nativeStream = new java.io.ByteArrayInputStream(initArr, 1, -3);
                     })
             );
         }
@@ -216,10 +254,10 @@ class ByteArrayInputStreamTest {
         void createWithTooLongLenth() throws Exception {
             assertAll( //
                     () -> assertDoesNotThrow(() -> {
-                        testedStream = new ByteArrayInputStream(initArr,1, 321);
+                        testedStream = new ByteArrayInputStream(initArr, 1, 321);
                     }),
                     () -> assertDoesNotThrow(() -> {
-                        nativeStream = new java.io.ByteArrayInputStream(initArr,1, 321);
+                        nativeStream = new java.io.ByteArrayInputStream(initArr, 1, 321);
                     })
             );
         }

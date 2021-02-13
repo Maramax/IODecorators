@@ -5,16 +5,14 @@ import java.io.IOException;
 import java.io.InputStream;
 
 public class BufferedInputStream extends FilterInputStream {
-
-
     private byte[] buffer;
     private int count;
     private int position;
-    private boolean isClosed;
     private static final int INITIAL_CAPACITY = 8 * 1024;
 
     /**
-     * Takes input stream from which the data will be read
+     * Takes input stream from which the data should be read.
+     * Create buffer with default capacity
      *
      * @param in - underlying input stream
      */
@@ -23,11 +21,11 @@ public class BufferedInputStream extends FilterInputStream {
     }
 
     /**
-     * Takes input stream from which the data will be read
-     * and the buffer size
+     * Takes input stream from which the data should be read
+     * and the buffer capacity. Creates buffer with the indicated capacity
      *
      * @param in       - underlying input stream
-     * @param capacity - buffer size
+     * @param capacity - buffer capacity
      * @throws IllegalArgumentException if capacity <= 0
      */
     public BufferedInputStream(InputStream in, int capacity) {
@@ -38,14 +36,16 @@ public class BufferedInputStream extends FilterInputStream {
         buffer = new byte[capacity];
         position = 0;
         count = 0;
-        isClosed = false;
     }
 
     /**
-     * Reads data from underlying input stream
+     * Reads data from the underlying input stream through the buffer.
+     * If there are data in the buffer - read data from buffer,
+     * otherwise - read new portion of data into buffer from the underlying input
      *
      * @return byte read or -1 if underlying input stream has no data to read
-     * @throws IOException if thread is closed or get IOException in refillBuffer()
+     * @throws IOException if stream is closed or gets exception
+     *                     while reading the underlying stream
      */
     @Override
     public int read() throws IOException {
@@ -62,74 +62,67 @@ public class BufferedInputStream extends FilterInputStream {
 
     /**
      * Reads data from underlying input stream into the destination byte array
+     * through the buffer invoking read() method in cycle.
+     * Returns number of bytes read.
      *
      * @param bytes        - destination array
      * @param offset       - offset in the destination array
      * @param lengthToRead - number of bytes that should be read
      * @return number of bytes read or -1 if there was no data to read
-     * @throws IOException if get IOException in read()
+     * @throws IOException if gets IOException in read()
+     * @throws IllegalArgumentException if offset < 0, lengthToRead < 0 or
+     *                                     offset > bytes.length - lengthToRead
      */
     @Override
     public int read(byte[] bytes, int offset, int lengthToRead) throws IOException {
-        int count = 0;
-
         checkIfClosed();
         validateReadParameters(bytes, offset, lengthToRead);
-
         if (bytes.length == 0 || lengthToRead == 0) {
             return 0;
         }
 
+        int readCount = 0;
         for (int i = offset; i < offset + lengthToRead; i++) {
             byte val = (byte) this.read();
             if (val < 0) {
-                if (count == 0) {
-                    count = -1;
-                }
-                return count;
+                return readCount != 0 ? readCount : -1;
             } else {
                 bytes[i] = val;
             }
-            count++;
+            readCount++;
         }
-        return count;
+        return readCount;
     }
 
-
-
     /**
-     * Closes underlying input stream
+     * Closes the underlying input stream invoking its close() method
+     * and set it to null
      *
-     * @throws IOException if get IOException in close()
+     * @throws IOException if gets IOException in close() method
      */
     @Override
     public void close() throws IOException {
-        checkInnerStreamForNull();
-        isClosed = true;
         in.close();
-
+        in = null;
     }
 
     /**
      * Tries to read the data from the underlying input stream
-     * to the buffer and reset the pos
+     * to the buffer and reset the position
      *
-     * @throws IOException if get IOException in read()
-     * @throws NullPointerException     if the underlying buffer is null
+     * @throws IOException if gets exception while reading from the underlying stream
      */
     private void refillBuffer() throws IOException {
-        checkInnerStreamForNull();
         count = in.read(buffer);
         position = 0;
     }
 
     /**
-     * Check parameters of method read() for validity
+     * Check parameters received for validity
      *
      * @param bytes        - destination array
      * @param offset       - offset in the destination array
      * @param lengthToRead - number of bytes that should be read
-     * @throws NullPointerException     if bytes is null
      * @throws IllegalArgumentException if offset < 0, lengthToRead < 0 or
      *                                  offset > bytes.length - lengthToRead
      */
@@ -138,29 +131,18 @@ public class BufferedInputStream extends FilterInputStream {
             throw new NullPointerException("Parameter \"bytes\" is null");
         }
         if (offset < 0 || lengthToRead < 0 || offset > bytes.length - lengthToRead) {
-            throw new RuntimeException("Wrong \"offset\" and/or \"lengthToRead\"");
+            throw new IllegalArgumentException("Wrong \"offset\" and/or \"lengthToRead\"");
         }
     }
 
     /**
-     * Checks stream is it's closed
+     * Checks if the underlying stream is closed
      *
-     * @throws IOException if the underlying input stream is closed
+     * @throws IOException if the underlying stream is null
      */
     private void checkIfClosed() throws IOException {
-        if (isClosed) {
-            throw new IOException("Stream is closed");
-        }
-    }
-
-    /**
-     * Checks that the underlying stream is not null
-     *
-     * @throws NullPointerException if underlying stream is null
-     */
-    private void checkInnerStreamForNull() {
         if (in == null) {
-            throw new NullPointerException("Underlying stream \"in\" is null");
+            throw new IOException("Stream is closed");
         }
     }
 

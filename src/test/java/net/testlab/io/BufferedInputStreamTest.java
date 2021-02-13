@@ -1,9 +1,6 @@
 package net.testlab.io;
 
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.DisplayName;
-import org.junit.jupiter.api.Nested;
-import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.*;
 
 import java.io.IOException;
 
@@ -86,24 +83,47 @@ class BufferedInputStreamTest {
                     })
             );
         }
-    }
 
-    @Nested
-    class CreatingTest {
-        @Test
-        @DisplayName("Try to create with wrong size")
-        void createWithWrongCapacity() throws Exception {
-            testedByteStream = new java.io.ByteArrayInputStream(initArr);
-            nativeByteStream = new java.io.ByteArrayInputStream(initArr);
-
-            assertAll( //
-                    () -> assertThrows(IllegalArgumentException.class, () -> {
-                        testedStream = new BufferedInputStream(testedByteStream, -3);
-                    }),
-                    () -> assertThrows(IllegalArgumentException.class, () -> {
-                        nativeStream = new java.io.BufferedInputStream(nativeByteStream, -3);
-                    })
-            );
+        @AfterEach
+        void cleanUp() throws IOException {
+            testedByteStream.close();
+            testedStream.close();
+            nativeByteStream.close();
+            nativeStream.close();
         }
     }
+
+
+    @Test
+    @DisplayName("Try to create with wrong size")
+    void createWithWrongCapacity() throws Exception {
+        testedByteStream = new java.io.ByteArrayInputStream(initArr);
+        nativeByteStream = new java.io.ByteArrayInputStream(initArr);
+
+        assertAll( //
+                () -> assertThrows(IllegalArgumentException.class, () -> {
+                    testedStream = new BufferedInputStream(testedByteStream, -3);
+                }),
+                () -> assertThrows(IllegalArgumentException.class, () -> {
+                    nativeStream = new java.io.BufferedInputStream(nativeByteStream, -3);
+                })
+        );
+    }
+
+    @Test
+    @DisplayName("Try to create and use with null stream parameter")
+    void createWithNullStream() throws Exception {
+        testedStream = new BufferedInputStream(null);
+        nativeStream = new java.io.BufferedInputStream(null);
+
+        assertAll( //
+                () -> assertThrows(IOException.class, () -> {
+                    int val = testedStream.read();
+                }),
+                () -> assertThrows(IOException.class, () -> {
+                    int val = nativeStream.read();
+                })
+        );
+    }
+
 }

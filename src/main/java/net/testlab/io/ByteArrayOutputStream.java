@@ -9,22 +9,21 @@ public class ByteArrayOutputStream extends OutputStream {
     private int count;
     private static final int INITIAL_CAPACITY = 32;
 
-    // private int size = 32;
-
     /**
-     * Creates a byte array of default size
+     * Creates an inner byte array into which the data should be written
+     * with default capacity.
      */
     public ByteArrayOutputStream() {
         this(INITIAL_CAPACITY);
     }
 
     /**
-     * Creates a byte array of size indicated
+     * Takes byte array capacity. Creates an inner byte array into which
+     * the data should be written with indicated capacity.
      *
-     * @param capacity - size of the byte array
+     * @param capacity - capacity of the byte array
      */
     public ByteArrayOutputStream(int capacity) {
-        //  this.size = size;
         if (capacity < 0) {
             throw new IllegalArgumentException("Wrong \"capacity\"");
         }
@@ -33,8 +32,8 @@ public class ByteArrayOutputStream extends OutputStream {
     }
 
     /**
-     * Writes a byte value into the byte array buf.
-     * If the buffer space is out - rewrites buf to larger array
+     * Writes a byte value into the inner byte array.
+     * If the byte array is out of capacity - rewrites it to a larger array
      *
      * @param b - byte to be write
      */
@@ -53,7 +52,8 @@ public class ByteArrayOutputStream extends OutputStream {
     }
 
     /**
-     * Takes bytes from a byte array and writes all of them.
+     * Takes bytes from a byte array and writes all of them into
+     * the inner byte array invoking write() method in cycle.
      *
      * @param bytes         - byte array with bytes to be write
      * @param offset        - offset in the byte array
@@ -78,7 +78,7 @@ public class ByteArrayOutputStream extends OutputStream {
     }
 
     /**
-     * Returns the data written into the bytes array
+     * Returns the data written into the inner bytes array
      *
      * @return bytes array of data written
      */
@@ -88,7 +88,7 @@ public class ByteArrayOutputStream extends OutputStream {
     }
 
     /**
-     * Check parameters of method write() for validity
+     * Check parameters received for validity
      *
      * @param bytes         - byte array with bytes to be write
      * @param offset        - offset in the byte array
@@ -99,7 +99,7 @@ public class ByteArrayOutputStream extends OutputStream {
             throw new NullPointerException("Parameter \"bytes\" is null");
         }
         if (offset < 0 || lengthToWrite < 0 || offset > bytes.length - lengthToWrite) {
-            throw new RuntimeException("Wrong \"offset\" and/or \"lenghtToRead\"");
+            throw new IllegalArgumentException("Wrong \"offset\" and/or \"lenghtToRead\"");
         }
     }
 
